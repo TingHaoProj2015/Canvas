@@ -1,0 +1,149 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>Canvas Example</title>
+	<script src="jquery-1.11.3.min.js"></script>
+	<script type="text/javascript">
+	function Circle(x, y, radius, color){
+		this.x = x;
+		this.y = y;
+		this.radius = radius;
+		this.color = color;
+		this.isSelected = false;
+	}
+
+	function triangle(center, x, y, color){
+		this.center = center;
+		this.x = x;
+		this.y = y;
+		this.color = color;
+
+	}
+
+	var circlces=[];
+	var canvas;
+	var context;
+
+	var triangles=[];
+	function addRandomCircle(){
+
+		var radius = randomFromTo(10,60);
+		var x = randomFromTo(0,canvas.width);
+		var y = randomFromTo(0,canvas.height);
+		var colors = ["black","yellow","orange","brown","purple"];
+		var color = colors[randomFromTo(0,4)];
+
+		var circle = new Circle(x,y,radius,color);
+		circlces.push(circle);
+		drawCircles();
+
+	}
+	var previousSelectedCirlce;
+	function canvasClick(e){
+		var clickX = e.pageX - canvas.offsetLeft;
+		var clickY = e.pageY - canvas.offsetTop;
+		for (var i = circlces.length - 1; i >= 0; i--) {
+			var circle = circlces[i];
+			var distanceFromCenter = Math.sqrt(
+				Math.pow(circle.x-clickX,2)+
+				Math.pow(circle.y-clickY,2));
+			if (distanceFromCenter <= circle.radius){
+				if (previousSelectedCirlce!==null){
+					previousSelectedCirlce = false;
+					previousSelectedCirlce= circle;
+					circle.isSelected = true;
+					drawCircles();
+					return;
+				}
+			}
+		};
+	}
+	// 
+	function addRandomTriangle(){
+		var center = randomFromTo(10,100);
+		var colors = ["black","yellow","orange","brown","purple"];
+		var color = colors[randomFromTo(0,4)];
+
+		var triangle = new Circle(center,center+100,center-100,color);
+
+		triangles.push(center);
+
+		drawTriangle();
+	}
+
+
+	function randomFromTo(from, to){
+		return Math.floor(Math.random()*(to-from+1) + from);
+	}
+
+	function drawCircles(){
+		context.clearRect(0, 0, canvas.width, canvas.height); // cear all canvas
+		for (var i = 0; i < circlces.length; i++) {
+			var circle = circlces[i];
+			context.globalAlpha = 0.85;
+			context.beginPath();
+			context.arc(circle.x, circle.y, circle.radius, 0, Math.PI*2);
+			context.fillStyle = circle.color;
+			context.strokeStyle = "black";
+			//if (circle.isSelected){}
+			context.lineWidth = circle.isSelected?5:1;
+			context.fill();
+			context.stroke();
+		};
+	}
+
+	function drawTriangle(){
+		context.clearRect(0, 0, canvas.width, canvas.height); // cear all canvas
+		for (var i = 0; i < triangles.length; i++) {
+			var triangle = triangles[i];
+			context.beginPath();
+			/*
+		    context.moveTo(triangle.center,50);
+		    context.lineTo(triangle.x,75);
+		    context.lineTo(triangle.y,80);
+		    context.fill();
+*/
+		    context.beginPath();
+		    context.moveTo(75,50);
+
+		    //context.moveTo(triangle.center,50);
+		    context.lineTo(100,75);
+		    context.lineTo(100,25);
+		    context.fill();
+
+
+		};
+	}
+
+	function clearCanvas(){
+		circlces =[];
+		drawCircles();
+	}
+
+	$(document).ready(function(){
+		canvas = document.getElementById("myCanvas");
+		context = canvas.getContext('2d');
+		canvas.onmousedown = canvasClick;
+		//ctx = canvas.getContext('2d');
+		$( "#test1" ).click(function() {
+		  	addRandomCircle();
+		});
+		$( "#test2" ).click(function() {
+		  	addRandomTriangle();
+		});
+		$( "#test3" ).click(function() {
+		  	clearCanvas();
+		});
+
+	});
+
+	</script>
+</head>
+<body>
+	<button id="test1">Add Circle</button>
+	<button id="test2">Add test</button>
+	<button id="test3">clear ALL</button>
+	<canvas id="myCanvas" width="500" height="500"></canvas>
+	
+</body>
+</html>
